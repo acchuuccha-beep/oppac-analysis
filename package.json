@@ -1,0 +1,29 @@
+{
+  "name": "oppac-analysis",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "lucide-react": "^1.37.0",
+    "next": "16.3.3",
+    "playwright-core": "^1.62.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "yahoo-finance2": "^4.0.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.3",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

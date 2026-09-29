@@ -1,0 +1,75 @@
+========================================================
+  OPPAC Analysis - how to set up on a new computer
+========================================================
+
+This is your private copy of the OPPAC Analysis app (option
+chain + spot match for NIFTY / BANKNIFTY). It downloads its
+own data from NSE India and Yahoo Finance - you do NOT need
+any account, login, or API key for the app itself.
+
+You were invited to the private GitHub repo
+    https://github.com/acchuuccha-beep/oppac-analysis
+That GitHub login (from the invite) is the ONLY thing you need
+besides two free installs.
+
+--------------------------------------------------------
+ STEP 1 - Install 2 things (one time, free):
+--------------------------------------------------------
+   1) Node.js  (LTS version)  -> https://nodejs.org
+   2) Git      (for Windows)  -> https://git-scm.com/download/win
+   Click through with default options for both.
+
+--------------------------------------------------------
+ STEP 2 - Download the project (one time):
+--------------------------------------------------------
+   Open a Command Prompt and type:
+
+     git clone https://github.com/acchuuccha-beep/oppac-analysis.git
+     cd oppac-analysis
+
+   (Enter your GitHub username + password when it asks.
+    If it rejects the password, use a personal access token
+    as the password - see "Github auth" note at the bottom.)
+
+--------------------------------------------------------
+ STEP 3 - Run it:
+--------------------------------------------------------
+   Double-click  start.bat
+   First run does it all automatically:
+     - installs dependencies (a minute or two)
+     - builds the app (a few minutes)
+     - starts the NSE scraper + the server
+     - opens  http://localhost:3001  in your browser
+
+   Double-click  stop.bat  when you want to stop it.
+
+--------------------------------------------------------
+ STEP 4 - When you are told a new version is ready:
+--------------------------------------------------------
+   Double-click  update.bat
+   It downloads the latest code, installs/rebuilds if needed,
+   and restarts the app so the change shows up immediately.
+   (If the app wasn't running, start it with start.bat.)
+
+--------------------------------------------------------
+ NOTES & TROUBLESHOOTING
+--------------------------------------------------------
+  - Live NSE numbers appear during market hours. When the
+    market is closed you still see the last real values or a
+    synthetic chain.
+  - If the browser never opens, check  data\server.log  and
+    data\nse-scraper.log for errors.
+  - If Windows Firewall asks "Allow Node.js?" click Allow
+    (otherwise only this computer can open the page).
+  - Phone on same Wi-Fi?  http://<your-ip>:3001  (ipconfig)
+  - "update.bat says pull failed / files changed": open a
+    Command Prompt, run  git stash  , then update.bat again.
+  - Your private data stays private: this project never sends
+    your local NSE data anywhere, and your folder here is not
+    shared with anyone. Only the owner pushes to GitHub.
+
+  GitHub auth: instead of your normal GitHub password, use a
+  Personal Access Token (Settings > Developer settings >
+  Personal access tokens > Tokens (classic) > Generate new
+  token, tick "repo", copy it) - or install GitHub Desktop
+  which handles login for you.
