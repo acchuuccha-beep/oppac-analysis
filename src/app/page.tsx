@@ -6,6 +6,9 @@ import { SpotMatchDrawer } from "@/components/spot-match-drawer";
 
 const SYMBOLS = ["NIFTY", "BANKNIFTY"] as const;
 
+// Bump this whenever you push an update your friends should see land.
+const BUILD = "v0.1.0 - 30 Sep 2026";
+
 export default function AnalysisPage() {
   const [symbol, setSymbol] = useState<string>("NIFTY");
   const [expiry, setExpiry] = useState<string | null>(null);
@@ -30,7 +33,8 @@ export default function AnalysisPage() {
             </button>
           ))}
         </span>
-        <span className="ml-auto flex items-center gap-2">
+        <span className="ml-auto flex items-center gap-3">
+          <span className="text-[10px] tabular-nums text-slate-400">build {BUILD}</span>
           <SpotMatchDrawer underlying={symbol} expiry={expiry ?? ""} />
         </span>
       </div>
