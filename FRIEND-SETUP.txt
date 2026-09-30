@@ -9,27 +9,38 @@ any account, login, or API key for the app itself.
 
 You were invited to the private GitHub repo
     https://github.com/acchuuccha-beep/oppac-analysis
-That GitHub login (from the invite) is the ONLY thing you need
-besides two free installs.
+You must accept that invite before you can download the app.
 
 --------------------------------------------------------
  STEP 1 - Install 2 things (one time, free):
 --------------------------------------------------------
-   1) Node.js  (LTS version)  -> https://nodejs.org
-   2) Git      (for Windows)  -> https://git-scm.com/download/win
+   1) Node.js  (LTS version)   ->  https://nodejs.org
+   2) GitHub Desktop           ->  https://desktop.github.com
+
+      GitHub Desktop includes Git and handles the GitHub
+      login for you - no password and no token needed.
+
    Click through with default options for both.
+   Restart Windows afterwards if it asks you to.
 
 --------------------------------------------------------
  STEP 2 - Download the project (one time):
 --------------------------------------------------------
-   Open a Command Prompt and type:
+   Easiest way - with GitHub Desktop:
 
-     git clone https://github.com/acchuuccha-beep/oppac-analysis.git
-     cd oppac-analysis
+     1. Open GitHub Desktop and sign in with your GitHub
+        account (it opens a browser - just approve it).
+     2. Click   File  ->  Clone repository...
+     3. Paste this into the Repository box:
+           https://github.com/acchuuccha-beep/oppac-analysis.git
+     4. Click  Clone.
 
-   (Enter your GitHub username + password when it asks.
-    If it rejects the password, use a personal access token
-    as the password - see "Github auth" note at the bottom.)
+   It downloads into your   Documents\GitHub\oppac-analysis
+   folder. You should see   start.bat   in there.
+
+   NOTE: when you later double-click update.bat it will NOT
+   ask you to log in again. GitHub Desktop already saved your
+   login, so updates work straight away.
 
 --------------------------------------------------------
  STEP 3 - Run it:
@@ -52,24 +63,47 @@ besides two free installs.
    (If the app wasn't running, start it with start.bat.)
 
 --------------------------------------------------------
+ IF YOU PREFER THE COMMAND PROMPT:
+--------------------------------------------------------
+   You can skip GitHub Desktop and type this instead:
+
+     git clone https://github.com/acchuuccha-beep/oppac-analysis.git
+     cd oppac-analysis
+
+   It will ask for your username and then a PASSWORD. Your
+   normal GitHub password will NOT work here - GitHub stopped
+   accepting passwords for git in August 2022.
+
+   If the password is rejected, use a Personal Access Token
+   instead of the password:
+     Settings -> Developer settings -> Personal access tokens
+     -> Tokens (classic) -> Generate new token, tick "repo",
+     copy it, and paste it at the password prompt.
+
+   If you installed GitHub Desktop as well, you never need
+   any of this - the login is already handled.
+
+--------------------------------------------------------
  NOTES & TROUBLESHOOTING
 --------------------------------------------------------
   - Live NSE numbers appear during market hours. When the
     market is closed you still see the last real values or a
     synthetic chain.
   - If the browser never opens, check  data\server.log  and
-    data\nse-scraper.log for errors.
+    data\nse-scraper.log  for errors.
   - If Windows Firewall asks "Allow Node.js?" click Allow
     (otherwise only this computer can open the page).
   - Phone on same Wi-Fi?  http://<your-ip>:3001  (ipconfig)
   - "update.bat says pull failed / files changed": open a
     Command Prompt, run  git stash  , then update.bat again.
+  - "update.bat says 'git' is not recognized": GitHub
+    Desktop's Git is not on your PATH. Install Git for Windows
+    from  https://git-scm.com/download/win  and run
+    update.bat again.
+  - To start completely fresh: delete the  data  folder and
+    the  .next  folder, then run start.bat again. Both are
+    rebuilt automatically and neither is part of the shared
+    project.
   - Your private data stays private: this project never sends
     your local NSE data anywhere, and your folder here is not
     shared with anyone. Only the owner pushes to GitHub.
-
-  GitHub auth: instead of your normal GitHub password, use a
-  Personal Access Token (Settings > Developer settings >
-  Personal access tokens > Tokens (classic) > Generate new
-  token, tick "repo", copy it) - or install GitHub Desktop
-  which handles login for you.
