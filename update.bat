@@ -44,11 +44,11 @@ if errorlevel 1 (
 
 echo  [2/4] Dependencies...
 if not exist "node_modules" goto :do_install
+if not exist "node_modules\.package-lock.json" goto :do_install
 powershell -NoProfile -NoLogo -ExecutionPolicy Bypass -Command ^
-  "if (Test-Path 'node_modules\package.json') { " ^
-  "$p = (Get-Item 'package.json').LastWriteTime; " ^
-  "$m = (Get-Item 'node_modules\package.json').LastWriteTime; " ^
-  "if ($p -gt $m) { exit 1 } }; exit 0"
+  "$p = (Get-Item 'package-lock.json').LastWriteTime; " ^
+  "$m = (Get-Item 'node_modules\.package-lock.json').LastWriteTime; " ^
+  "if ($p -gt $m) { exit 1 }; exit 0"
 if errorlevel 1 goto :do_install
 goto :deps_ok
 :do_install
@@ -65,10 +65,17 @@ if errorlevel 1 (
 echo  [3/4] Building if anything changed...
 if not exist ".next\BUILD_ID" goto :do_build
 powershell -NoProfile -NoLogo -ExecutionPolicy Bypass -Command ^
-  "if (Test-Path '.next\BUILD_ID') { " ^
-  "$newest = Get-ChildItem 'src' -Recurse -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1; " ^
-  "$bid = Get-Item '.next\BUILD_ID'; " ^
-  "if ($newest -and $newest.LastWriteTime -gt $bid.LastWriteTime) { exit 1 } }; exit 0"
+  "$bid = (Get-Item '.next\BUILD_ID').LastWriteTime; " ^
+  "$paths = @('src','scripts','package.json','package-lock.json'," ^
+  "'next.config.ts','postcss.config.mjs','tsconfig.json'); " ^
+  "$newest = $null; " ^
+  "foreach ($p in $paths) { if (Test-Path $p) { " ^
+  "$i = Get-Item $p; " ^
+  "if ($i.PSIsContainer) { " ^
+  "$f = Get-ChildItem $p -Recurse -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1; " ^
+  "if ($f -and $f.LastWriteTime -gt $newest) { $newest = $f.LastWriteTime } " ^
+  "} elseif ($i.LastWriteTime -gt $newest) { $newest = $i.LastWriteTime } } }; " ^
+  "if ($newest -and $newest -gt $bid) { exit 1 }; exit 0"
 if errorlevel 1 goto :do_build
 goto :build_ok
 :do_build
