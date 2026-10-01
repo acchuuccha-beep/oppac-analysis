@@ -19,6 +19,7 @@
   --color-ink: #0f172a;
   --color-surface: #f8fafc;
   --color-line: #e2e8f0;
+  --color-zone-pale: #fff8ef;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }

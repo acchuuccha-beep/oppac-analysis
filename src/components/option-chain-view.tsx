@@ -171,6 +171,21 @@ export function OptionChainView({
 
   const advantageLabel = advantageLabelText(advantageOf(match.ce, match.pe));
 
+  // When spot is at/below the lowest displayed strike no row has a strike below
+  // the spot, so splitIndex === rows.length and the separator is appended after
+  // the last row instead (boundary below the list). Symmetric to the above-range
+  // case where the separator renders before the first row.
+  const spotLine = (
+    <tr key="spot-line" id="live-spot-line" className="relative">
+      <td colSpan={7} className="relative h-7 px-3">
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-brand-500/70" />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-brand-200 bg-brand-600 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
+          SPOT {inr(chain.spot, 2)}
+        </span>
+      </td>
+    </tr>
+  );
+
   return (
     <div>
       <div>
@@ -269,18 +284,10 @@ export function OptionChainView({
             {chain.rows.flatMap((r, i) => {
               const nodes = [];
               if (i === splitIndex) {
-                nodes.push(
-                  <tr key="spot-line" id="live-spot-line" className="relative">
-                    <td colSpan={7} className="relative h-7 px-3">
-                      <div className="pointer-events-none absolute inset-x-0 top-1/2 border-t border-brand-500/70" />
-                      <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 whitespace-nowrap rounded-full border border-brand-200 bg-brand-600 px-2 py-0.5 text-[10px] font-bold tracking-wide text-white shadow-sm">
-                        SPOT {inr(chain.spot, 2)}
-                      </span>
-                    </td>
-                  </tr>,
-                );
+                nodes.push(spotLine);
               }
               const isAtm = r.strike === atm;
+              const aboveSpot = r.strike >= chain.spot;
               const ceCalc = r.strike + r.ce.ltp;
               const ceDiff = Math.abs(ceCalc - chain.spot);
               const peCalc = r.strike - r.pe.ltp;
@@ -290,13 +297,15 @@ export function OptionChainView({
               nodes.push(
                 <tr
                   key={r.strike}
-                  className={`border-b border-line/50 ${
+                  className={`border-b border-line/50 transition-colors ${
                     isAtm ? "bg-brand-50/60 hover:bg-brand-100/70" : "hover:bg-slate-50"
                   } ${isBestCe ? "border-l-2 border-l-emerald-500" : ""} ${
                     isBestPe ? "border-r-2 border-r-orange-400" : ""
                   }`}
                 >
-                  <td className={`px-3 py-1.5 text-right ${isBestCe ? "bg-emerald-100" : ""}`}>
+                  <td
+                    className={`px-3 py-1.5 text-right transition-colors ${isBestCe ? "bg-emerald-100" : aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""}`}
+                  >
                     <div className="tabular text-[10px] text-slate-400">Calc: {ceCalc.toFixed(2)}</div>
                     <div className="flex items-center justify-end gap-1">
                       {isBestCe && (
@@ -313,16 +322,40 @@ export function OptionChainView({
                       </span>
                     </div>
                   </td>
-                  <td className="tabular px-3 py-1.5 text-right text-slate-500">{num2.format(r.ce.oi)}</td>
-                  <td className="px-3 py-1.5 text-right font-semibold">
+                  <td
+                    className={`tabular px-3 py-1.5 text-right text-slate-500 transition-colors ${
+                      aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""
+                    }`}
+                  >
+                    {num2.format(r.ce.oi)}
+                  </td>
+                  <td
+                    className={`px-3 py-1.5 text-right font-semibold transition-colors ${
+                      aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""
+                    }`}
+                  >
                     <div className="tabular text-up">{r.ce.ltp.toFixed(2)}</div>
                   </td>
                   <td className="tabular px-3 py-1.5 text-center font-bold text-blue-700">{r.strike}</td>
-                  <td className="px-3 py-1.5 font-semibold">
+                  <td
+                    className={`px-3 py-1.5 font-semibold transition-colors ${
+                      !aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""
+                    }`}
+                  >
                     <div className="tabular text-down">{r.pe.ltp.toFixed(2)}</div>
                   </td>
-                  <td className="tabular px-3 py-1.5 text-left text-slate-500">{num2.format(r.pe.oi)}</td>
-                  <td className={`px-3 py-1.5 text-right ${isBestPe ? "bg-orange-100" : ""}`}>
+                  <td
+                    className={`tabular px-3 py-1.5 text-left text-slate-500 transition-colors ${
+                      !aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""
+                    }`}
+                  >
+                    {num2.format(r.pe.oi)}
+                  </td>
+                  <td
+                    className={`px-3 py-1.5 text-right transition-colors ${
+                      isBestPe ? "bg-orange-100" : !aboveSpot ? "bg-zone-pale hover:bg-slate-50" : ""
+                    }`}
+                  >
                     <div className="tabular text-[10px] text-slate-400">Calc: {peCalc.toFixed(2)}</div>
                     <div className="flex items-center justify-start gap-1">
                       <span
@@ -341,6 +374,9 @@ export function OptionChainView({
                   </td>
                 </tr>,
               );
+              if (splitIndex === chain.rows.length && i === chain.rows.length - 1) {
+                nodes.push(spotLine);
+              }
               return nodes;
             })}
           </tbody>
