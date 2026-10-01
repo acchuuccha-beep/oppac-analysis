@@ -9,6 +9,13 @@ echo ============================================
 echo   Folder: %CD%
 echo.
 
+REM -- Keep a snapshot of ourselves. Updating can replace this very file while
+REM -- cmd.exe is still reading it, and because batch files are read by byte
+REM -- offset that makes cmd resume at a nonsense position in the new file and
+REM -- fail with errors like "'word' is not recognized". :check_self compares
+REM -- the two and hands over to the fresh copy when they differ.
+copy /y "%~dp0update.bat" "%TEMP%\oppac-update-snapshot.bat" >nul 2>&1
+
 where git >nul 2>&1
 if errorlevel 1 (
   echo  Git is not installed or not on your PATH, so we cannot download
@@ -80,6 +87,8 @@ git reset --hard origin/main 2>&1
 if errorlevel 1 goto :repair_failed
 echo  Repair complete - this folder can now update itself.
 echo.
+call :check_self
+if errorlevel 1 exit /b 1
 :git_ok
 
 echo  [1/4] Downloading latest code from GitHub...
@@ -100,6 +109,12 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
+
+REM -- The pull may have just replaced update.bat underneath us. Hand over to
+REM -- the new copy before continuing, otherwise the rest of this run reads
+REM -- from the wrong byte offset and breaks in confusing ways.
+call :check_self
+if errorlevel 1 exit /b 1
 
 echo  [2/4] Dependencies...
 if not exist "node_modules" goto :do_install
@@ -191,8 +206,21 @@ if not defined up (
 echo.
 echo  Done - updated and restarted. Refresh the tab at:
 echo   http://localhost:3001
+del "%TEMP%\oppac-update-snapshot.bat" >nul 2>&1
 pause
 exit /b 0
+
+:check_self
+REM -- Compares this file against the snapshot taken at startup. Returns 1 when
+REM -- the file changed and the caller should stop, 0 when it is unchanged.
+fc /b "%~dp0update.bat" "%TEMP%\oppac-update-snapshot.bat" >nul 2>&1
+if not errorlevel 1 exit /b 0
+del "%TEMP%\oppac-update-snapshot.bat" >nul 2>&1
+echo.
+echo  The updater was updated by this download, so restarting it...
+echo.
+call "%~dp0update.bat"
+exit /b 1
 
 :cancelled
 echo  Cancelled - nothing was changed.
