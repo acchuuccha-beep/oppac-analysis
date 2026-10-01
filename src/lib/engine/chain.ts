@@ -27,10 +27,23 @@ export async function buildSyntheticChain(underlying: string, expiry: string | n
       const pePrice = Math.max(bsmPrice("put", spot, strike, t, v), 0);
       const baseOi = Math.round(40000 + dist * 8);
       const oiSeed = ((idx * 7919) % 97) / 1000;
+      const peSeed = 1 - oiSeed;
+      const ceOi = Math.round(baseOi * (0.9 + 0.2 * oiSeed));
+      const peOi = Math.round(baseOi * (0.9 + 0.2 * peSeed));
       return {
         strike,
-        ce: { ltp: Math.round(cePrice * 100) / 100, oi: Math.round(baseOi * (0.9 + 0.2 * oiSeed)), change_oi: Math.round((oiSeed - 0.5) * 800) },
-        pe: { ltp: Math.round(pePrice * 100) / 100, oi: Math.round(baseOi * (0.9 + 0.2 * (1 - oiSeed))), change_oi: Math.round((0.5 - oiSeed) * 800) },
+        ce: {
+          ltp: Math.round(cePrice * 100) / 100,
+          oi: ceOi,
+          change_oi: Math.round((oiSeed - 0.5) * 800),
+          volume: Math.round(ceOi * (0.3 + 1.4 * oiSeed)),
+        },
+        pe: {
+          ltp: Math.round(pePrice * 100) / 100,
+          oi: peOi,
+          change_oi: Math.round((0.5 - oiSeed) * 800),
+          volume: Math.round(peOi * (0.3 + 1.4 * peSeed)),
+        },
       };
     });
 

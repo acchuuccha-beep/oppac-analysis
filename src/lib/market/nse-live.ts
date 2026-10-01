@@ -121,11 +121,13 @@ export function getNseChainRows(
           ltp: leg.ce?.has ? leg.ce.ltp : 0,
           oi: leg.ce?.has ? leg.ce.oi : 0,
           change_oi: leg.ce?.has ? leg.ce.change_oi : 0,
+          volume: leg.ce?.has ? leg.ce.volume : 0,
         },
         pe: {
           ltp: leg.pe?.has ? leg.pe.ltp : 0,
           oi: leg.pe?.has ? leg.pe.oi : 0,
           change_oi: leg.pe?.has ? leg.pe.change_oi : 0,
+          volume: leg.pe?.has ? leg.pe.volume : 0,
         },
       };
     },

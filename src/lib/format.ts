@@ -41,6 +41,14 @@ export function isoSafe(iso: string | null | undefined): string {
   return d.toLocaleString("en-IN", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 
+export function compactIndian(n: number): string {
+  const abs = Math.abs(n);
+  if (abs >= 1e7) return `${num2.format(n / 1e7)}Cr`;
+  if (abs >= 1e5) return `${num2.format(n / 1e5)}L`;
+  if (abs >= 1e3) return `${num2.format(n / 1e3)}K`;
+  return num2.format(n);
+}
+
 export function shortDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00Z`);
   if (isNaN(d.getTime())) return iso;

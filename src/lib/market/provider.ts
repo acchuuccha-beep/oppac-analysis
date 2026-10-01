@@ -18,8 +18,8 @@ export interface SearchResult {
 
 export interface StrikeRow {
   strike: number;
-  ce: { ltp: number; oi: number; change_oi: number }; 
-  pe: { ltp: number; oi: number; change_oi: number };
+  ce: { ltp: number; oi: number; change_oi: number; volume: number };
+  pe: { ltp: number; oi: number; change_oi: number; volume: number };
 }
 
 export interface OptionChain {
