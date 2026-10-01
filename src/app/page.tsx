@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { OptionChainView } from "@/components/option-chain-view";
 import { SpotMatchDrawer } from "@/components/spot-match-drawer";
+import { WelcomeBanner } from "@/components/welcome-banner";
 
 const SYMBOLS = ["NIFTY", "BANKNIFTY"] as const;
 
 // Bump this whenever you push an update your friends should see land.
-const BUILD = "v0.1.0 - 30 Sep 2026";
+const BUILD = "v0.2.0 - 01 Oct 2026";
 
 export default function AnalysisPage() {
   const [symbol, setSymbol] = useState<string>("NIFTY");
@@ -38,6 +39,8 @@ export default function AnalysisPage() {
           <SpotMatchDrawer underlying={symbol} expiry={expiry ?? ""} />
         </span>
       </div>
+
+      <WelcomeBanner build={BUILD} />
 
       <div className="rounded-xl border border-line bg-white p-3">
         <OptionChainView underlying={symbol} expiry={expiry} onExpiryChange={setExpiry} />
