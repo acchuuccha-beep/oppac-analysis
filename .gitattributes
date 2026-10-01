@@ -1,0 +1,9 @@
+# Windows script hosts are picky about line endings: cmd.exe can mis-parse
+# labels and multi-line blocks when a .bat uses bare LF endings. Pin these.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.vbs text eol=crlf
+*.ps1 text eol=crlf
+
+# Everything else stays LF in the repo and converts per each machine's config.
+* text=auto
