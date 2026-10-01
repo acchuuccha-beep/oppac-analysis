@@ -13,7 +13,7 @@ where git >nul 2>&1
 if errorlevel 1 (
   echo  Git is not installed or not on your PATH, so we cannot download
   echo  the new version. Install GitHub Desktop from github.com/desktop
-  echo  (it bundles Git and handles the login), then run update.bat again.
+  echo  - it bundles Git and handles the login - then run update.bat again.
   pause
   exit /b 1
 )
@@ -62,11 +62,8 @@ echo  and check you are running the update.bat inside the app
 echo  folder, not a copy somewhere else.
 echo.
 set /p REPAIR="  Press Y to repair and continue (or N to cancel): "
-if /i not "%REPAIR%"=="Y" (
-  echo  Cancelled - nothing was changed.
-  pause
-  exit /b 1
-)
+if /i not "%REPAIR%"=="Y" goto :cancelled
+
 echo.
 echo  Repairing folder, please wait...
 git init --quiet 2>&1
@@ -74,9 +71,10 @@ git remote remove origin >nul 2>&1
 git remote add origin https://github.com/acchuuccha-beep/oppac-analysis.git 2>&1
 git fetch --quiet origin 2>&1
 if errorlevel 1 goto :repair_failed
-REM -- -B pins the local branch to main and matches it to origin/main, so the
-REM -- pull further down works no matter what git init named the branch.
-git checkout -B main origin/main 2>&1
+REM -- -f is required: in a freshly initialised folder every file is untracked,
+REM -- and without -f git refuses to overwrite them. -B pins the branch to main
+REM -- so the pull further down works whatever git init named it.
+git checkout -f -B main origin/main 2>&1
 if errorlevel 1 goto :repair_failed
 git reset --hard origin/main 2>&1
 if errorlevel 1 goto :repair_failed
@@ -195,6 +193,11 @@ echo  Done - updated and restarted. Refresh the tab at:
 echo   http://localhost:3001
 pause
 exit /b 0
+
+:cancelled
+echo  Cancelled - nothing was changed.
+pause
+exit /b 1
 
 :repair_failed
 echo.
